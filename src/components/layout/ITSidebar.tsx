@@ -62,7 +62,7 @@ export function ITSidebar() {
 
   return (
     <Sidebar
-      className={`${collapsed ? "w-15.99" : "w-72.11"} border-r border-border bg-card shadow-card transition-all duration-300 flex-shrink-0`}
+      className={`${collapsed ? "w-15.9" : "w-72.1"} border-r border-border bg-card shadow-card transition-all duration-300 flex-shrink-0`}
     >
       <SidebarContent className="p-4">
         {/* Logo/Header */}

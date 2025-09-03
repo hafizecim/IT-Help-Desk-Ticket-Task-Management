@@ -14,7 +14,168 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      tickets: {
+        Row: {
+          id: string
+          ticket_code: string
+          title: string
+          description: string | null
+          priority: 'low' | 'medium' | 'high' | 'critical' | null
+          status: 'new' | 'assigned' | 'in_progress' | 'pending' | 'resolved' | 'closed' | null
+          assignee: string | null
+          requester: string | null
+          category: string | null
+          created_at: string
+          sla_deadline: string | null
+          time_spent: string | null
+        }
+        Insert: {
+          ticket_code: string
+          title: string
+          description?: string
+          priority?: 'low' | 'medium' | 'high' | 'critical'
+          status?: 'new' | 'assigned' | 'in_progress' | 'pending' | 'resolved' | 'closed'
+          assignee?: string
+          requester?: string
+          category?: string
+          sla_deadline?: string
+          time_spent?: string
+        }
+        Update: Partial<{
+          ticket_code: string
+          title: string
+          description: string
+          priority: 'low' | 'medium' | 'high' | 'critical'
+          status: 'new' | 'assigned' | 'in_progress' | 'pending' | 'resolved' | 'closed'
+          assignee: string
+          requester: string
+          category: string
+          sla_deadline: string
+          time_spent: string
+        }>
+      }
+
+      projects: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          status: 'planning' | 'active' | 'completed'
+          priority: 'low' | 'medium' | 'high' | 'critical'
+          assignees: Json | null
+          progress: number
+          due_date: string | null
+          total_tasks: number
+          completed_tasks: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          title: string
+          description?: string
+          status?: 'planning' | 'active' | 'completed'
+          priority?: 'low' | 'medium' | 'high' | 'critical'
+          assignees?: Json
+          progress?: number
+          due_date?: string
+          total_tasks?: number
+          completed_tasks?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<{
+          id: string
+          title: string
+          description: string
+          status: 'planning' | 'active' | 'completed'
+          priority: 'low' | 'medium' | 'high' | 'critical'
+          assignees: Json
+          progress: number
+          due_date: string
+          total_tasks: number
+          completed_tasks: number
+          created_at: string
+          updated_at: string
+        }>
+      }
+
+      users: {
+        Row: {
+          id: number
+          user_id: string
+          name: string
+          email: string
+          role: string
+          department: string | null
+          status: 'active' | 'busy' | 'away' | 'offline' | null
+          phone: string | null
+          location: string | null
+          tickets_assigned: number
+          tickets_completed: number
+          last_active: string
+        }
+        Insert: {
+          user_id: string
+          name: string
+          email: string
+          role: string
+          department?: string
+          status?: 'active' | 'busy' | 'away' | 'offline'
+          phone?: string
+          location?: string
+          tickets_assigned?: number
+          tickets_completed?: number
+          last_active?: string
+        }
+        Update: Partial<{
+          user_id: string
+          name: string
+          email: string
+          role: string
+          department: string
+          status: 'active' | 'busy' | 'away' | 'offline'
+          phone: string
+          location: string
+          tickets_assigned: number
+          tickets_completed: number
+          last_active: string
+        }>
+      }
+
+      dashboard_stats: {
+        Row: {
+          id: number
+          stat_key: string
+          stat_title: string
+          stat_value: string
+          stat_change: string | null
+          stat_change_type: 'increase' | 'decrease'
+          stat_description: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          stat_key: string
+          stat_title: string
+          stat_value: string
+          stat_change?: string
+          stat_change_type?: 'increase' | 'decrease'
+          stat_description?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<{
+          stat_key: string
+          stat_title: string
+          stat_value: string
+          stat_change: string
+          stat_change_type: 'increase' | 'decrease'
+          stat_description: string
+          created_at: string
+          updated_at: string
+        }>
+      }
     }
     Views: {
       [_ in never]: never
