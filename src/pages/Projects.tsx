@@ -19,10 +19,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Tables } from "@/integrations/supabase/types";
 
+import { useNavigate } from "react-router-dom";
+
+
 type ProjectRow = Tables<"projects">;
 
 export default function Projects() {
   const [projects, setProjects] = useState<ProjectRow[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchProjects() {
@@ -72,11 +76,15 @@ export default function Projects() {
             <Button size="sm" variant="outline">
               <Download className="h-4 w-4 mr-2" />
               Export
+              </Button>
+            <Button
+                onClick={() => navigate("/projects/NewProject")}
+                size="sm"
+                className="bg-gradient-primary">
+                <Plus className="h-4 w-4 mr-2" />
+                New Project
             </Button>
-            <Button size="sm" className="bg-gradient-primary">
-              <Plus className="h-4 w-4 mr-2" />
-              New Project
-            </Button>
+      
           </div>
         </div>
 

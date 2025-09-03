@@ -14,167 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      tickets: {
-        Row: {
-          id: string
-          ticket_code: string
-          title: string
-          description: string | null
-          priority: 'low' | 'medium' | 'high' | 'critical' | null
-          status: 'new' | 'assigned' | 'in_progress' | 'pending' | 'resolved' | 'closed' | null
-          assignee: string | null
-          requester: string | null
-          category: string | null
-          created_at: string
-          sla_deadline: string | null
-          time_spent: string | null
-        }
-        Insert: {
-          ticket_code: string
-          title: string
-          description?: string
-          priority?: 'low' | 'medium' | 'high' | 'critical'
-          status?: 'new' | 'assigned' | 'in_progress' | 'pending' | 'resolved' | 'closed'
-          assignee?: string
-          requester?: string
-          category?: string
-          sla_deadline?: string
-          time_spent?: string
-        }
-        Update: Partial<{
-          ticket_code: string
-          title: string
-          description: string
-          priority: 'low' | 'medium' | 'high' | 'critical'
-          status: 'new' | 'assigned' | 'in_progress' | 'pending' | 'resolved' | 'closed'
-          assignee: string
-          requester: string
-          category: string
-          sla_deadline: string
-          time_spent: string
-        }>
-      }
-
-      projects: {
-        Row: {
-          id: string
-          title: string
-          description: string | null
-          status: 'planning' | 'active' | 'completed'
-          priority: 'low' | 'medium' | 'high' | 'critical'
-          assignees: Json | null
-          progress: number
-          due_date: string | null
-          total_tasks: number
-          completed_tasks: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id: string
-          title: string
-          description?: string
-          status?: 'planning' | 'active' | 'completed'
-          priority?: 'low' | 'medium' | 'high' | 'critical'
-          assignees?: Json
-          progress?: number
-          due_date?: string
-          total_tasks?: number
-          completed_tasks?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: Partial<{
-          id: string
-          title: string
-          description: string
-          status: 'planning' | 'active' | 'completed'
-          priority: 'low' | 'medium' | 'high' | 'critical'
-          assignees: Json
-          progress: number
-          due_date: string
-          total_tasks: number
-          completed_tasks: number
-          created_at: string
-          updated_at: string
-        }>
-      }
-
-      users: {
-        Row: {
-          id: number
-          user_id: string
-          name: string
-          email: string
-          role: string
-          department: string | null
-          status: 'active' | 'busy' | 'away' | 'offline' | null
-          phone: string | null
-          location: string | null
-          tickets_assigned: number
-          tickets_completed: number
-          last_active: string
-        }
-        Insert: {
-          user_id: string
-          name: string
-          email: string
-          role: string
-          department?: string
-          status?: 'active' | 'busy' | 'away' | 'offline'
-          phone?: string
-          location?: string
-          tickets_assigned?: number
-          tickets_completed?: number
-          last_active?: string
-        }
-        Update: Partial<{
-          user_id: string
-          name: string
-          email: string
-          role: string
-          department: string
-          status: 'active' | 'busy' | 'away' | 'offline'
-          phone: string
-          location: string
-          tickets_assigned: number
-          tickets_completed: number
-          last_active: string
-        }>
-      }
-
       dashboard_stats: {
         Row: {
+          created_at: string | null
           id: number
+          stat_change: string | null
+          stat_change_type: string | null
+          stat_description: string | null
           stat_key: string
           stat_title: string
           stat_value: string
-          stat_change: string | null
-          stat_change_type: 'increase' | 'decrease'
-          stat_description: string | null
-          created_at: string
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
+          created_at?: string | null
+          id?: number
+          stat_change?: string | null
+          stat_change_type?: string | null
+          stat_description?: string | null
           stat_key: string
           stat_title: string
           stat_value: string
-          stat_change?: string
-          stat_change_type?: 'increase' | 'decrease'
-          stat_description?: string
-          created_at?: string
-          updated_at?: string
+          updated_at?: string | null
         }
-        Update: Partial<{
-          stat_key: string
-          stat_title: string
-          stat_value: string
-          stat_change: string
-          stat_change_type: 'increase' | 'decrease'
-          stat_description: string
-          created_at: string
-          updated_at: string
-        }>
+        Update: {
+          created_at?: string | null
+          id?: number
+          stat_change?: string | null
+          stat_change_type?: string | null
+          stat_description?: string | null
+          stat_key?: string
+          stat_title?: string
+          stat_value?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          assignees: Json | null
+          completed_tasks: number | null
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: Database["public"]["Enums"]["project_priority_enum"] | null
+          progress: number | null
+          status: Database["public"]["Enums"]["project_status_enum"] | null
+          title: string
+          total_tasks: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assignees?: Json | null
+          completed_tasks?: number | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["project_priority_enum"] | null
+          progress?: number | null
+          status?: Database["public"]["Enums"]["project_status_enum"] | null
+          title: string
+          total_tasks?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assignees?: Json | null
+          completed_tasks?: number | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["project_priority_enum"] | null
+          progress?: number | null
+          status?: Database["public"]["Enums"]["project_status_enum"] | null
+          title?: string
+          total_tasks?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      tickets: {
+        Row: {
+          assignee: string | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          priority: string | null
+          requester: string | null
+          sla_deadline: string | null
+          status: string | null
+          ticket_code: string
+          time_spent: string | null
+          title: string
+        }
+        Insert: {
+          assignee?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          priority?: string | null
+          requester?: string | null
+          sla_deadline?: string | null
+          status?: string | null
+          ticket_code: string
+          time_spent?: string | null
+          title: string
+        }
+        Update: {
+          assignee?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          priority?: string | null
+          requester?: string | null
+          sla_deadline?: string | null
+          status?: string | null
+          ticket_code?: string
+          time_spent?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          department: string | null
+          email: string
+          id: number
+          last_active: string | null
+          location: string | null
+          name: string
+          phone: string | null
+          role: string
+          status: string | null
+          tickets_assigned: number | null
+          tickets_completed: number | null
+          user_id: string
+        }
+        Insert: {
+          department?: string | null
+          email: string
+          id?: number
+          last_active?: string | null
+          location?: string | null
+          name: string
+          phone?: string | null
+          role: string
+          status?: string | null
+          tickets_assigned?: number | null
+          tickets_completed?: number | null
+          user_id: string
+        }
+        Update: {
+          department?: string | null
+          email?: string
+          id?: number
+          last_active?: string | null
+          location?: string | null
+          name?: string
+          phone?: string | null
+          role?: string
+          status?: string | null
+          tickets_assigned?: number | null
+          tickets_completed?: number | null
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -184,7 +193,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      project_priority_enum: "low" | "medium" | "high" | "critical"
+      project_status_enum: "planning" | "active" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -311,6 +321,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      project_priority_enum: ["low", "medium", "high", "critical"],
+      project_status_enum: ["planning", "active", "completed"],
+    },
   },
 } as const
