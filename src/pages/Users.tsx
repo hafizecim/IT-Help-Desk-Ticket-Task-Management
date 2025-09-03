@@ -16,63 +16,32 @@ import {
   MapPin,
   Settings
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { Tables } from "@/integrations/supabase/types";
 
-const users = [
-  {
-    id: "USR-001",
-    name: "John Doe",
-    email: "john.doe@company.com",
-    role: "IT Administrator",
-    department: "Information Technology",
-    status: "active",
-    lastActive: "2 minutes ago",
-    phone: "+1 (555) 123-4567",
-    location: "New York Office",
-    ticketsAssigned: 8,
-    ticketsCompleted: 145
-  },
-  {
-    id: "USR-002",
-    name: "Jane Smith", 
-    email: "jane.smith@company.com",
-    role: "IT Support Specialist",
-    department: "Information Technology",
-    status: "active",
-    lastActive: "5 minutes ago",
-    phone: "+1 (555) 123-4568",
-    location: "New York Office",
-    ticketsAssigned: 12,
-    ticketsCompleted: 98
-  },
-  {
-    id: "USR-003",
-    name: "Mike Johnson",
-    email: "mike.johnson@company.com",
-    role: "Network Administrator",
-    department: "Information Technology",
-    status: "busy",
-    lastActive: "1 hour ago",
-    phone: "+1 (555) 123-4569",
-    location: "Boston Office",
-    ticketsAssigned: 5,
-    ticketsCompleted: 67
-  },
-  {
-    id: "USR-004",
-    name: "Sarah Wilson",
-    email: "sarah.wilson@company.com",
-    role: "Security Specialist",
-    department: "Information Technology",
-    status: "away",
-    lastActive: "3 hours ago",
-    phone: "+1 (555) 123-4570",
-    location: "Remote",
-    ticketsAssigned: 3,
-    ticketsCompleted: 134
-  }
-];
+type UserRow = Tables<"users">;
 
 export default function Users() {
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .order("name", { ascending: true });
+
+    if (error) console.error("Supabase error:", error);
+    if (data) setUsers(data);
+    setLoading(false);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-success/20 text-success border-success/30';
@@ -156,89 +125,90 @@ export default function Users() {
 
         {/* Users Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {users.map((user) => (
-            <Card key={user.id} className="border-border bg-card shadow-card hover:shadow-elegant transition-all duration-200">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-xs">
-                    {user.id}
-                  </Badge>
-                  <Badge className={getStatusColor(user.status) + " text-xs"}>
-                    {user.status.toUpperCase()}
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="relative">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                        {user.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-card ${getStatusDot(user.status)}`}></div>
+          {loading ? (
+            <p className="text-center text-muted-foreground col-span-full">Loading users...</p>
+          ) : (
+            users.map((user) => (
+              <Card key={user.id} className="border-border bg-card shadow-card hover:shadow-elegant transition-all duration-200">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-xs">{user.id}</Badge>
+                    <Badge className={getStatusColor(user.status) + " text-xs"}>
+                      {user.status.toUpperCase()}
+                    </Badge>
                   </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground">{user.name}</h3>
-                    <p className="text-sm text-primary font-medium">{user.role}</p>
-                    <p className="text-xs text-muted-foreground">{user.department}</p>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                {/* Contact Info */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{user.email}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{user.phone}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{user.location}</span>
-                  </div>
-                </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-4 p-3 bg-muted/30 rounded-lg border border-border">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-primary">{user.ticketsAssigned}</div>
-                    <div className="text-xs text-muted-foreground">Assigned</div>
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <Avatar className="h-12 w-12">
+                        <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                          {user.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-card ${getStatusDot(user.status)}`}></div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground">{user.name}</h3>
+                      <p className="text-sm text-primary font-medium">{user.role}</p>
+                      <p className="text-xs text-muted-foreground">{user.department}</p>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-success">{user.ticketsCompleted}</div>
-                    <div className="text-xs text-muted-foreground">Completed</div>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  {/* Contact Info */}
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-sm">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">{user.email}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">{user.phone}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">{user.location}</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Last Active */}
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Last active:</span>
-                  <span className="font-medium">{user.lastActive}</span>
-                </div>
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-4 p-3 bg-muted/30 rounded-lg border border-border">
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-primary">{user.tickets_assigned}</div>
+                      <div className="text-xs text-muted-foreground">Assigned</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-success">{user.tickets_completed}</div>
+                      <div className="text-xs text-muted-foreground">Completed</div>
+                    </div>
+                  </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between pt-4 border-t border-border">
-                  <Button variant="outline" size="sm">
-                    <User className="h-4 w-4 mr-2" />
-                    View Profile
-                  </Button>
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                      <Settings className="h-4 w-4" />
+                  {/* Last Active */}
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Last active:</span>
+                    <span className="font-medium">{user.last_active}</span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <Button variant="outline" size="sm">
+                      <User className="h-4 w-4 mr-2" />
+                      View Profile
                     </Button>
-                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                      <Mail className="h-4 w-4" />
-                    </Button>
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                        <Mail className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </ITLayout>
