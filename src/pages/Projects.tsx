@@ -15,47 +15,27 @@ import {
   Calendar,
   Clock
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { Tables } from "@/integrations/supabase/types";
 
-const projects = [
-  {
-    id: "PRJ-001",
-    title: "Office Network Infrastructure Upgrade",
-    description: "Complete overhaul of network infrastructure for main office",
-    status: "active",
-    priority: "high",
-    assignees: ["John Doe", "Jane Smith"],
-    progress: 65,
-    dueDate: "2024-09-15",
-    totalTasks: 12,
-    completedTasks: 8
-  },
-  {
-    id: "PRJ-002", 
-    title: "Employee Laptop Replacement Program",
-    description: "Replace outdated laptops for 50+ employees",
-    status: "planning",
-    priority: "medium",
-    assignees: ["Mike Johnson"],
-    progress: 25,
-    dueDate: "2024-10-01",
-    totalTasks: 25,
-    completedTasks: 6
-  },
-  {
-    id: "PRJ-003",
-    title: "Security System Implementation",
-    description: "Deploy new security monitoring and access control systems",
-    status: "active",
-    priority: "critical",
-    assignees: ["Sarah Wilson", "Tom Brown"],
-    progress: 90,
-    dueDate: "2024-09-05",
-    totalTasks: 8,
-    completedTasks: 7
-  }
-];
+type ProjectRow = Tables<"projects">;
 
 export default function Projects() {
+  const [projects, setProjects] = useState<ProjectRow[]>([]);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (!error && data) setProjects(data);
+    }
+    fetchProjects();
+  }, []);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-success/20 text-success border-success/30';
@@ -138,76 +118,81 @@ export default function Projects() {
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <Card key={project.id} className="border-border bg-card shadow-card hover:shadow-elegant transition-all duration-200">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-xs">
-                    {project.id}
-                  </Badge>
-                  <div className="flex space-x-2">
-                    <Badge className={getPriorityColor(project.priority) + " text-xs"}>
-                      {project.priority.toUpperCase()}
-                    </Badge>
-                    <Badge className={getStatusColor(project.status) + " text-xs"}>
-                      {project.status.toUpperCase()}
-                    </Badge>
-                  </div>
-                </div>
-                <CardTitle className="text-lg line-clamp-2">
-                  {project.title}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {project.description}
-                </p>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                {/* Progress */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Progress</span>
-                    <span className="font-medium">{project.progress}%</span>
-                  </div>
-                  <Progress value={project.progress} className="h-2" />
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{project.completedTasks}/{project.totalTasks} tasks</span>
-                  </div>
-                </div>
+          {projects.map((project) => {
+            // Assignees array control
+            const assignees = Array.isArray(project.assignees) ? project.assignees : [];
 
-                {/* Project Info */}
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Team</span>
+            return (
+              <Card key={project.id} className="border-border bg-card shadow-card hover:shadow-elegant transition-all duration-200">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-xs">
+                      {project.id}
+                    </Badge>
+                    <div className="flex space-x-2">
+                      <Badge className={getPriorityColor(project.priority) + " text-xs"}>
+                        {project.priority?.toUpperCase()}
+                      </Badge>
+                      <Badge className={getStatusColor(project.status) + " text-xs"}>
+                        {project.status?.toUpperCase()}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Due Date</span>
+                  <CardTitle className="text-lg line-clamp-2">
+                    {project.title}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {project.description}
+                  </p>
+                </CardHeader>
+                
+                <CardContent className="space-y-4">
+                  {/* Progress */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="font-medium">{project.progress}%</span>
+                    </div>
+                    <Progress value={project.progress} className="h-2" />
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{project.completed_tasks}/{project.total_tasks} tasks</span>
+                    </div>
                   </div>
-                  <div className="text-xs text-foreground">
-                    {project.assignees.length} members
-                  </div>
-                  <div className="text-xs text-foreground">
-                    {new Date(project.dueDate).toLocaleDateString()}
-                  </div>
-                </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between pt-4 border-t border-border">
-                  <Button variant="outline" size="sm">
-                    <FolderOpen className="h-4 w-4 mr-2" />
-                    View Details
-                  </Button>
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                      <Clock className="h-4 w-4" />
+                  {/* Project Info */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Team</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Due Date</span>
+                    </div>
+                    <div className="text-xs text-foreground">
+                      {assignees.length} members
+                    </div>
+                    <div className="text-xs text-foreground">
+                      {project.due_date ? new Date(project.due_date).toLocaleDateString() : "-"}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <Button variant="outline" size="sm">
+                      <FolderOpen className="h-4 w-4 mr-2" />
+                      View Details
                     </Button>
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                        <Clock className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </ITLayout>
